@@ -41,4 +41,4 @@ def main(dest_name):
             break
 
 if __name__ == "__main__":
-    main('google.com')
+    main('163.com')
