@@ -1,8 +1,8 @@
-//TraceRoute.h
+ï»¿//TraceRoute.h
 #ifndef _ITRACERT_H_
 #define _ITRACERT_H_
 #pragma pack(1)
-//IPÊı¾İ±¨Í·
+//IPæ•°æ®æŠ¥å¤´
 typedef struct
 {
  unsigned char hdr_len :4;  // length of the header
@@ -17,31 +17,31 @@ typedef struct
  unsigned long sourceIP;  // source IP address
  unsigned long destIP;   // destination IP address
 } IP_HEADER;
-//ICMPÊı¾İ±¨Í·
+//ICMPæ•°æ®æŠ¥å¤´
 typedef struct
 {
- BYTE type;  //8Î»ÀàĞÍ
- BYTE code;  //8Î»´úÂë
- USHORT cksum;  //16Î»Ğ£ÑéºÍ
- USHORT id;   //16Î»±êÊ¶·û
- USHORT seq;  //16Î»ĞòÁĞºÅ
+ BYTE type;  //8ä½ç±»å‹
+ BYTE code;  //8ä½ä»£ç 
+ USHORT cksum;  //16ä½æ ¡éªŒå’Œ
+ USHORT id;   //16ä½æ ‡è¯†ç¬¦
+ USHORT seq;  //16ä½åºåˆ—å·
 } ICMP_HEADER;
-//½âÂë½á¹û
+//è§£ç ç»“æœ
 typedef struct
 {
- USHORT usSeqNo;   //°üĞòÁĞºÅ
- DWORD dwRoundTripTime; //Íù·µÊ±¼ä
- in_addr dwIPaddr;  //¶Ô¶ËIPµØÖ·
+ USHORT usSeqNo;   //åŒ…åºåˆ—å·
+ DWORD dwRoundTripTime; //å¾€è¿”æ—¶é—´
+ in_addr dwIPaddr;  //å¯¹ç«¯IPåœ°å€
 } DECODE_RESULT;
 #pragma pack()
-//ICMPÀàĞÍ×Ö¶Î
-const BYTE ICMP_ECHO_REQUEST = 8; //ÇëÇó»ØÏÔ
-const BYTE ICMP_ECHO_REPLY  = 0; //»ØÏÔÓ¦´ğ
-const BYTE ICMP_TIMEOUT   = 11; //´«Êä³¬Ê±
-const DWORD DEF_ICMP_TIMEOUT = 3000; //Ä¬ÈÏ³¬Ê±Ê±¼ä£¬µ¥Î»ms
-const int DEF_ICMP_DATA_SIZE = 32; //Ä¬ÈÏICMPÊı¾İ²¿·Ö³¤¶È
-const int MAX_ICMP_PACKET_SIZE = 1024; //×î´óICMPÊı¾İ±¨µÄ´óĞ¡
-const int DEF_MAX_HOP = 30;    //×î´óÌøÕ¾Êı
+//ICMPç±»å‹å­—æ®µ
+const BYTE ICMP_ECHO_REQUEST = 8; //è¯·æ±‚å›æ˜¾
+const BYTE ICMP_ECHO_REPLY  = 0; //å›æ˜¾åº”ç­”
+const BYTE ICMP_TIMEOUT   = 11; //ä¼ è¾“è¶…æ—¶
+const DWORD DEF_ICMP_TIMEOUT = 3000; //é»˜è®¤è¶…æ—¶æ—¶é—´ï¼Œå•ä½ms
+const int DEF_ICMP_DATA_SIZE = 32; //é»˜è®¤ICMPæ•°æ®éƒ¨åˆ†é•¿åº¦
+const int MAX_ICMP_PACKET_SIZE = 1024; //æœ€å¤§ICMPæ•°æ®æŠ¥çš„å¤§å°
+const int DEF_MAX_HOP = 30;    //æœ€å¤§è·³ç«™æ•°
 USHORT GenerateChecksum(USHORT* pBuf, int iSize);
 BOOL DecodeIcmpResponse(char* pBuf, int iPacketSize, DECODE_RESULT& stDecodeResult);
 #endif // _ITRACERT_H_

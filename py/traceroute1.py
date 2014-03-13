@@ -17,7 +17,8 @@ class Tracer:
 
     def __init__(self, host):
 	self.id = (os.getpid() & 0xffff) | 0x8000
-	self.init_probe_packet(os.uname()[1], host)
+	import platform
+	self.init_probe_packet(platform.uname()[1], host)
 	self.times = {}
 	self.got_there = None
 	# control be

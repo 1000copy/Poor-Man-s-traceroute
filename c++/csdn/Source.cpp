@@ -1,8 +1,8 @@
-
+ï»¿
 //TraceRoute.cpp
 /*----------------------------------------------------------
-¹¦ÄÜËµÃ÷£º¸Ã³ÌĞò¼òµ¥ÊµÏÖÁËWindows²Ù×÷ÏµÍ³µÄtracertÃüÁî¹¦ÄÜ£¬
-      ¿ÉÒÔÊä³öIP±¨ÎÄ´Ó±¾»ú³ö·¢µ½´ïÄ¿µÄÖ÷»úËù¾­¹ıµÄÂ·ÓÉĞÅÏ¢¡£
+åŠŸèƒ½è¯´æ˜ï¼šè¯¥ç¨‹åºç®€å•å®ç°äº†Windowsæ“ä½œç³»ç»Ÿçš„tracertå‘½ä»¤åŠŸèƒ½ï¼Œ
+      å¯ä»¥è¾“å‡ºIPæŠ¥æ–‡ä»æœ¬æœºå‡ºå‘åˆ°è¾¾ç›®çš„ä¸»æœºæ‰€ç»è¿‡çš„è·¯ç”±ä¿¡æ¯ã€‚
 -----------------------------------------------------------*/
 #include <iostream>
 #include <iomanip>
@@ -10,17 +10,17 @@
 #include <ws2tcpip.h>
 #include <stdio.h>
 #include "source.h"
-#pragma comment(lib,"ws2_32")
+
 using namespace std;
 int main(int argc, char* argv[])
 {
- //¼ì²éÃüÁîĞĞ²ÎÊı
+ //æ£€æŸ¥å‘½ä»¤è¡Œå‚æ•°
  if (argc != 2)
  {
   cerr << "\nUsage: itracert ip_or_hostname\n";
   return -1;
  }
- //³õÊ¼»¯winsock2»·¾³
+ //åˆå§‹åŒ–winsock2ç¯å¢ƒ
  WSADATA wsa;
  if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
  {
@@ -28,21 +28,21 @@ int main(int argc, char* argv[])
     << "error code: " << WSAGetLastError() << endl;
   return -1;
  }
- //½«ÃüÁîĞĞ²ÎÊı×ª»»ÎªIPµØÖ·
+ //å°†å‘½ä»¤è¡Œå‚æ•°è½¬æ¢ä¸ºIPåœ°å€
  u_long ulDestIP = inet_addr(argv[1]);
  if (ulDestIP == INADDR_NONE)
  {
-  //×ª»»²»³É¹¦Ê±°´ÓòÃû½âÎö
+  //è½¬æ¢ä¸æˆåŠŸæ—¶æŒ‰åŸŸåè§£æ
   hostent* pHostent = gethostbyname(argv[1]);
   if (pHostent)
   {
    ulDestIP = (*(in_addr*)pHostent->h_addr).s_addr;
-   //Êä³öÆÁÄ»ĞÅÏ¢
+   //è¾“å‡ºå±å¹•ä¿¡æ¯
    cout << "\nTracing route to " << argv[1] 
      << " [" << inet_ntoa(*(in_addr*)(&ulDestIP)) << "]"
      << " with a maximum of " << DEF_MAX_HOP << " hops.\n" << endl;
   }
-  else //½âÎöÖ÷»úÃûÊ§°Ü
+  else //è§£æä¸»æœºåå¤±è´¥
   {
    cerr << "\nCould not resolve the host name " << argv[1] << '\n'
      << "error code: " << WSAGetLastError() << endl;
@@ -52,16 +52,16 @@ int main(int argc, char* argv[])
  }
  else
  {
-  //Êä³öÆÁÄ»ĞÅÏ¢
+  //è¾“å‡ºå±å¹•ä¿¡æ¯
   cout << "\nTracing route to " << argv[1] 
     << " with a maximum of " << DEF_MAX_HOP << " hops.\n" << endl;
  }
- //Ìî³äÄ¿µÄSocketµØÖ·
+ //å¡«å……ç›®çš„Socketåœ°å€
  sockaddr_in destSockAddr;
  ZeroMemory(&destSockAddr, sizeof(sockaddr_in));
  destSockAddr.sin_family = AF_INET;
  destSockAddr.sin_addr.s_addr = ulDestIP;
- //Ê¹ÓÃICMPĞ­Òé´´½¨Raw Socket
+ //ä½¿ç”¨ICMPåè®®åˆ›å»ºRaw Socket
  SOCKET sockRaw = WSASocket(AF_INET, SOCK_RAW, IPPROTO_ICMP, NULL, 0, WSA_FLAG_OVERLAPPED);
  if (sockRaw == INVALID_SOCKET)
  {
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   WSACleanup();
   return -1;
  }
- //ÉèÖÃ¶Ë¿ÚÊôĞÔ
+ //è®¾ç½®ç«¯å£å±æ€§
  int iTimeout = DEF_ICMP_TIMEOUT;
  if (setsockopt(sockRaw, SOL_SOCKET, SO_RCVTIMEO, (char*)&iTimeout, sizeof(iTimeout)) == SOCKET_ERROR)
  {
@@ -80,18 +80,18 @@ int main(int argc, char* argv[])
   WSACleanup();
   return -1;
  }
- //´´½¨ICMP°ü·¢ËÍ»º³åÇøºÍ½ÓÊÕ»º³åÇø
+ //åˆ›å»ºICMPåŒ…å‘é€ç¼“å†²åŒºå’Œæ¥æ”¶ç¼“å†²åŒº
  char IcmpSendBuf[sizeof(ICMP_HEADER)+DEF_ICMP_DATA_SIZE];
  memset(IcmpSendBuf, 0, sizeof(IcmpSendBuf));
  char IcmpRecvBuf[MAX_ICMP_PACKET_SIZE];
  memset(IcmpRecvBuf, 0, sizeof(IcmpRecvBuf));
- //Ìî³ä´ı·¢ËÍµÄICMP°ü
+ //å¡«å……å¾…å‘é€çš„ICMPåŒ…
  ICMP_HEADER* pIcmpHeader = (ICMP_HEADER*)IcmpSendBuf;
  pIcmpHeader->type = ICMP_ECHO_REQUEST;
  pIcmpHeader->code = 0;
  pIcmpHeader->id = (USHORT)GetCurrentProcessId();
  memset(IcmpSendBuf+sizeof(ICMP_HEADER), 'E', DEF_ICMP_DATA_SIZE);
- //¿ªÊ¼Ì½²âÂ·ÓÉ
+ //å¼€å§‹æ¢æµ‹è·¯ç”±
  DECODE_RESULT stDecodeResult;
  BOOL bReachDestHost = FALSE;
  USHORT usSeqNo = 0;
@@ -99,76 +99,77 @@ int main(int argc, char* argv[])
  int iMaxHop = DEF_MAX_HOP;
  while (!bReachDestHost && iMaxHop--)
  {
-  //ÉèÖÃIPÊı¾İ±¨Í·µÄttl×Ö¶Î
-  setsockopt(sockRaw, IPPROTO_IP, IP_TTL, (char*)&iTTL, sizeof(iTTL));
-  //Êä³öµ±Ç°ÌøÕ¾Êı×÷ÎªÂ·ÓÉĞÅÏ¢ĞòºÅ
-  cout << setw(3) << iTTL << flush;
-  //Ìî³äICMPÊı¾İ±¨Ê£Óà×Ö¶Î
-  ((ICMP_HEADER*)IcmpSendBuf)->cksum = 0;
-  ((ICMP_HEADER*)IcmpSendBuf)->seq = htons(usSeqNo++);
-  ((ICMP_HEADER*)IcmpSendBuf)->cksum = GenerateChecksum((USHORT*)IcmpSendBuf, sizeof(ICMP_HEADER)+DEF_ICMP_DATA_SIZE);
-  
-  //¼ÇÂ¼ĞòÁĞºÅºÍµ±Ç°Ê±¼ä
-  stDecodeResult.usSeqNo = ((ICMP_HEADER*)IcmpSendBuf)->seq;
-  stDecodeResult.dwRoundTripTime = GetTickCount();
-  
-  //·¢ËÍICMPµÄEchoRequestÊı¾İ±¨
-  if (sendto(sockRaw, IcmpSendBuf, sizeof(IcmpSendBuf), 0, 
-       (sockaddr*)&destSockAddr, sizeof(destSockAddr)) == SOCKET_ERROR)
-  {
-   //Èç¹ûÄ¿µÄÖ÷»ú²»¿É´ïÔòÖ±½ÓÍË³ö
-   if (WSAGetLastError() == WSAEHOSTUNREACH)
-    cout << '\t' << "Destination host unreachable.\n" 
-      << "\nTrace complete.\n" << endl;
-   closesocket(sockRaw);
-   WSACleanup();
-   return 0;
-  }
-  //½ÓÊÕICMPµÄEchoReplyÊı¾İ±¨
-  //ÒòÎªÊÕµ½µÄ¿ÉÄÜ²¢·Ç³ÌĞòËùÆÚ´ıµÄÊı¾İ±¨£¬ËùÒÔĞèÒªÑ­»·½ÓÊÕÖ±µ½ÊÕµ½ËùÒªÊı¾İ»ò³¬Ê±
-  sockaddr_in from;
-  int iFromLen = sizeof(from);
-  int iReadDataLen;
-  while (1)
-  {
-   //µÈ´ıÊı¾İµ½´ï
-   iReadDataLen = recvfrom(sockRaw, IcmpRecvBuf, MAX_ICMP_PACKET_SIZE, 
-         0, (sockaddr*)&from, &iFromLen);
-   if (iReadDataLen != SOCKET_ERROR) //ÓĞÊı¾İ°üµ½´ï
-   {
-    //½âÂëµÃµ½µÄÊı¾İ°ü£¬Èç¹û½âÂëÕıÈ·ÔòÌø³ö½ÓÊÕÑ­»··¢ËÍÏÂÒ»¸öEchoRequest°ü
-    if (DecodeIcmpResponse(IcmpRecvBuf, iReadDataLen, stDecodeResult))
+    //è®¾ç½®IPæ•°æ®æŠ¥å¤´çš„ttlå­—æ®µ
+    setsockopt(sockRaw, IPPROTO_IP, IP_TTL, (char*)&iTTL, sizeof(iTTL));
+    //è¾“å‡ºå½“å‰è·³ç«™æ•°ä½œä¸ºè·¯ç”±ä¿¡æ¯åºå·
+    cout << setw(3) << iTTL << flush;
+    //å¡«å……ICMPæ•°æ®æŠ¥å‰©ä½™å­—æ®µ
+    ((ICMP_HEADER*)IcmpSendBuf)->cksum = 0;
+    ((ICMP_HEADER*)IcmpSendBuf)->seq = htons(usSeqNo++);
+    ((ICMP_HEADER*)IcmpSendBuf)->cksum = GenerateChecksum((USHORT*)IcmpSendBuf, sizeof(ICMP_HEADER)+DEF_ICMP_DATA_SIZE);
+    
+    //è®°å½•åºåˆ—å·å’Œå½“å‰æ—¶é—´
+    stDecodeResult.usSeqNo = ((ICMP_HEADER*)IcmpSendBuf)->seq;
+    stDecodeResult.dwRoundTripTime = GetTickCount();
+    
+    //å‘é€ICMPçš„EchoRequestæ•°æ®æŠ¥
+    if (sendto(sockRaw, IcmpSendBuf, sizeof(IcmpSendBuf), 0, 
+         (sockaddr*)&destSockAddr, sizeof(destSockAddr)) == SOCKET_ERROR)
     {
-     if (stDecodeResult.dwIPaddr.s_addr == destSockAddr.sin_addr.s_addr)
-      bReachDestHost = TRUE;
-     cout << '\t' << inet_ntoa(stDecodeResult.dwIPaddr) << endl;
-     break;
+     //å¦‚æœç›®çš„ä¸»æœºä¸å¯è¾¾åˆ™ç›´æ¥é€€å‡º
+     if (WSAGetLastError() == WSAEHOSTUNREACH)
+      cout << '\t' << "Destination host unreachable.\n" 
+        << "\nTrace complete.\n" << endl;
+     closesocket(sockRaw);
+     WSACleanup();
+     return 0;
     }
-   }
-   else if (WSAGetLastError() == WSAETIMEDOUT) //½ÓÊÕ³¬Ê±£¬´òÓ¡ĞÇºÅ
-   {
-    cout << setw(9) << '*' << '\t' << "Request timed out." << endl;
-    break;
-   }
-   else
-   {
-    cerr << "\nFailed to call recvfrom\n"
-      << "error code: " << WSAGetLastError() << endl;
-    closesocket(sockRaw);
-    WSACleanup();
-    return -1;
-   }
-  }
-  //TTLÖµ¼Ó1
-  iTTL++;
+    // äºŸ,æ€¥ä¹Ÿã€‚â€”â€”ã€Šå¹¿é›…ã€‹ 
+    //æ¥æ”¶ICMPçš„EchoReplyæ•°æ®æŠ¥
+    //å› ä¸ºæ”¶åˆ°çš„å¯èƒ½å¹¶éç¨‹åºæ‰€æœŸå¾…çš„æ•°æ®æŠ¥ï¼Œæ‰€ä»¥éœ€è¦å¾ªç¯æ¥æ”¶ç›´åˆ°æ”¶åˆ°æ‰€è¦æ•°æ®æˆ–è¶…æ—¶
+    sockaddr_in from;
+    int iFromLen = sizeof(from);
+    int iReadDataLen;
+    while (1)
+    {
+     //ç­‰å¾…æ•°æ®åˆ°è¾¾
+     iReadDataLen = recvfrom(sockRaw, IcmpRecvBuf, MAX_ICMP_PACKET_SIZE, 
+           0, (sockaddr*)&from, &iFromLen);
+     if (iReadDataLen != SOCKET_ERROR) //æœ‰æ•°æ®åŒ…åˆ°è¾¾
+     {
+      //è§£ç å¾—åˆ°çš„æ•°æ®åŒ…ï¼Œå¦‚æœè§£ç æ­£ç¡®åˆ™è·³å‡ºæ¥æ”¶å¾ªç¯å‘é€ä¸‹ä¸€ä¸ªEchoRequeståŒ…
+      if (DecodeIcmpResponse(IcmpRecvBuf, iReadDataLen, stDecodeResult))
+      {
+       if (stDecodeResult.dwIPaddr.s_addr == destSockAddr.sin_addr.s_addr)
+        bReachDestHost = TRUE;
+       cout << '\t' << inet_ntoa(stDecodeResult.dwIPaddr) << endl;
+       break;
+      }
+     }
+     else if (WSAGetLastError() == WSAETIMEDOUT) //æ¥æ”¶è¶…æ—¶ï¼Œæ‰“å°æ˜Ÿå·
+     {
+      cout << setw(9) << '*' << '\t' << "Request timed out." << endl;
+      break;
+     }
+     else
+     {
+      cerr << "\nFailed to call recvfrom\n"
+        << "error code: " << WSAGetLastError() << endl;
+      closesocket(sockRaw);
+      WSACleanup();
+      return -1;
+     }
+    }
+    //TTLå€¼åŠ 1
+    iTTL++;
  }
- //Êä³öÆÁÄ»ĞÅÏ¢
+ //è¾“å‡ºå±å¹•ä¿¡æ¯
  cout << "\nTrace complete.\n" << endl;
  closesocket(sockRaw);
  WSACleanup();
  return 0;
 }
-//²úÉúÍø¼ÊĞ£ÑéºÍ
+//äº§ç”Ÿç½‘é™…æ ¡éªŒå’Œ
 USHORT GenerateChecksum(USHORT* pBuf, int iSize) 
 {
  unsigned long cksum = 0;
@@ -183,15 +184,15 @@ USHORT GenerateChecksum(USHORT* pBuf, int iSize)
  cksum += (cksum >> 16);
  return (USHORT)(~cksum);
 }
-//½âÂëµÃµ½µÄÊı¾İ±¨
+//è§£ç å¾—åˆ°çš„æ•°æ®æŠ¥
 BOOL DecodeIcmpResponse(char* pBuf, int iPacketSize, DECODE_RESULT& stDecodeResult)
 {
- //¼ì²éÊı¾İ±¨´óĞ¡µÄºÏ·¨ĞÔ
+ //æ£€æŸ¥æ•°æ®æŠ¥å¤§å°çš„åˆæ³•æ€§
  IP_HEADER* pIpHdr = (IP_HEADER*)pBuf;
  int iIpHdrLen = pIpHdr->hdr_len * 4;
  if (iPacketSize < (int)(iIpHdrLen+sizeof(ICMP_HEADER)))
   return FALSE;
- //°´ÕÕICMP°üÀàĞÍ¼ì²éid×Ö¶ÎºÍĞòÁĞºÅÒÔÈ·¶¨ÊÇ·ñÊÇ³ÌĞòÓ¦½ÓÊÕµÄIcmp°ü
+ //æŒ‰ç…§ICMPåŒ…ç±»å‹æ£€æŸ¥idå­—æ®µå’Œåºåˆ—å·ä»¥ç¡®å®šæ˜¯å¦æ˜¯ç¨‹åºåº”æ¥æ”¶çš„IcmpåŒ…
  ICMP_HEADER* pIcmpHdr = (ICMP_HEADER*)(pBuf+iIpHdrLen);
  USHORT usID, usSquNo;
  if (pIcmpHdr->type == ICMP_ECHO_REPLY)
@@ -201,9 +202,9 @@ BOOL DecodeIcmpResponse(char* pBuf, int iPacketSize, DECODE_RESULT& stDecodeResu
  }
  else if(pIcmpHdr->type == ICMP_TIMEOUT)
  {
-  char* pInnerIpHdr = pBuf+iIpHdrLen+sizeof(ICMP_HEADER);  //ÔØºÉÖĞµÄIPÍ·
-  int iInnerIPHdrLen = ((IP_HEADER*)pInnerIpHdr)->hdr_len * 4;//ÔØºÉÖĞµÄIPÍ·³¤
-  ICMP_HEADER* pInnerIcmpHdr = (ICMP_HEADER*)(pInnerIpHdr+iInnerIPHdrLen);//ÔØºÉÖĞµÄICMPÍ·
+  char* pInnerIpHdr = pBuf+iIpHdrLen+sizeof(ICMP_HEADER);  //è½½è·ä¸­çš„IPå¤´
+  int iInnerIPHdrLen = ((IP_HEADER*)pInnerIpHdr)->hdr_len * 4;//è½½è·ä¸­çš„IPå¤´é•¿
+  ICMP_HEADER* pInnerIcmpHdr = (ICMP_HEADER*)(pInnerIpHdr+iInnerIPHdrLen);//è½½è·ä¸­çš„ICMPå¤´
   usID = pInnerIcmpHdr->id;
   usSquNo = pInnerIcmpHdr->seq;
  }
@@ -211,14 +212,14 @@ BOOL DecodeIcmpResponse(char* pBuf, int iPacketSize, DECODE_RESULT& stDecodeResu
   return FALSE;
  if (usID != (USHORT)GetCurrentProcessId() || usSquNo !=stDecodeResult.usSeqNo) 
   return FALSE;
- //´¦ÀíÕıÈ·ÊÕµ½µÄICMPÊı¾İ±¨
+ //å¤„ç†æ­£ç¡®æ”¶åˆ°çš„ICMPæ•°æ®æŠ¥
  if (pIcmpHdr->type == ICMP_ECHO_REPLY ||
   pIcmpHdr->type == ICMP_TIMEOUT)
  {
-  //·µ»Ø½âÂë½á¹û
+  //è¿”å›è§£ç ç»“æœ
   stDecodeResult.dwIPaddr.s_addr = pIpHdr->sourceIP;
   stDecodeResult.dwRoundTripTime = GetTickCount()-stDecodeResult.dwRoundTripTime;
-  //´òÓ¡ÆÁÄ»ĞÅÏ¢
+  //æ‰“å°å±å¹•ä¿¡æ¯
   if (stDecodeResult.dwRoundTripTime)
    cout << setw(6) << stDecodeResult.dwRoundTripTime << " ms" << flush;
   else
