@@ -1,3 +1,39 @@
+# 可以用的ping
+  py/t.py
+  http://pythonicprose.blogspot.com/2009/09/python-pure-python-ping-using-raw.html
+  
+# 你也有今天，呵呵呵
+
+This works on Windows, but doesn't return the correct result on Linux. On Linux, it sends requests, but no replies come back.
+
+# dodgy frame send 
+
+You do it like this:
+
+First you disable your network card's automatic checksumming:
+
+sudo ethtool -K eth1 tx off
+And then send your dodgy frame from python:
+
+#!/usr/bin/env python
+from socket import socket, AF_PACKET, SOCK_RAW
+s = socket(AF_PACKET, SOCK_RAW)
+s.bind(("eth1", 0))
+
+# We're putting together an ethernet frame here, 
+# but you could have anything you want instead
+# Have a look at the 'struct' module for more 
+# flexible packing/unpacking of binary data
+# and 'binascii' for 32 bit CRC
+src_addr = "\x01\x02\x03\x04\x05\x06"
+dst_addr = "\x01\x02\x03\x04\x05\x06"
+payload = ("["*30)+"PAYLOAD"+("]"*30)
+checksum = "\x1a\x2b\x3c\x4d"
+ethertype = "\x08\x01"
+
+s.send(dst_addr+src_addr+ethertype+payload+checksum)
+Done.
+
 # mac traceroute comment 
 
  traceroute host  - trace the route ip packets follow going to "host".

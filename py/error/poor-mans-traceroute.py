@@ -18,6 +18,11 @@ def main(dest_name):
         curr_addr = None
         curr_name = None
         try:
+            # timeLeft = 5
+            # import select
+            # whatReady = select.select([recv_socket], [], [], timeLeft)             
+            # if whatReady[0] == []: # Timeout 
+            #     return 
             _, curr_addr = recv_socket.recvfrom(512)
             curr_addr = curr_addr[0]
             try:
