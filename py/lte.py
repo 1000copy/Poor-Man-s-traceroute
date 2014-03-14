@@ -4,7 +4,11 @@ import os, sys, socket, struct, select, time
 ICMP_ECHO_REQUEST = 8 
 ICMP_ECHO_REPLY  = 0; 
 ICMP_TIMEOUT   = 11; 
- 
+
+
+c_echo_reply =1
+c_echo_ttl =2
+c_echo_timeout  =3
     
 import unittest
 
@@ -51,7 +55,7 @@ class Trace:
 # } IP_HEADER;
     def int2ip(self,addr):                                                               
                         # return socket.inet_ntoa(struct.pack("!I", addr))                    
-        return socket.inet_ntoa(addr)                    
+        return socket.inet_ntoa(addr)      
     def echo_reply_decode(self, ID, timeout,timeSend):         
         # (reply,ttl exceed,timeout),ip address ,delay
         timeLeft = timeout 
@@ -60,7 +64,7 @@ class Trace:
             whatReady = select.select([self.my_socket], [], [], timeLeft) 
             howLongInSelect = (time.clock() - startedSelect) 
             if whatReady[0] == []: # Timeout 
-                return None,0,0
+                return c_echo_timeout,0,0
             timeReceived = time.clock() 
             recPacket, addr = self.my_socket.recvfrom(1024) 
             icmpHeader = recPacket[20:28] 
@@ -75,14 +79,14 @@ class Trace:
                 if packetID == ID: 
                     bytesInDouble = struct.calcsize("d") 
                     timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]                     
-                    return 2,self.int2ip(ip),timeReceived - timeSent
+                    return c_echo_reply,self.int2ip(ip),timeReceived - timeSent
             if type ==  ICMP_TIMEOUT:
                     # print("Timeout")                    
-                    return ICMP_TIMEOUT,(self.int2ip(ip)),timeReceived - timeSend 
+                    return c_echo_ttl,(self.int2ip(ip)),timeReceived - timeSend 
             timeLeft = timeLeft - howLongInSelect 
             if timeLeft <= 0: 
-                return None,0,0            
-            return None,0,0
+                return c_echo_timeout,0,0            
+            return c_echo_timeout,0,0
     def echo_request(self, dest_addr, ID): 
         dest_addr  =  socket.gethostbyname(dest_addr)      
         # Header is type (8), code (8), checksum (16), id (16), sequence (16) 
@@ -121,14 +125,15 @@ class Trace:
         self.echo_request(dest_addr, my_ID) 
         timeSend = time.clock() 
         flag,addr,delay = self.echo_reply_decode( my_ID, timeout,timeSend)              
-        if flag  ==  None: 
+        if flag  ==  c_echo_timeout: 
             print "\ttimeout"                      
         else: 
             delay  =  delay * 1000 
             print "\t%s in %0.4fms" % (addr,delay)
-            if flag ==2 :
-                return 1
+            if flag == c_echo_reply :
+                return 1#exit loop
         self.my_socket.close()
+        return 0
      
     def do(self,dest_addr, timeout = 3, max_hops = 30): 
         print "ping %s...\n" % dest_addr, 
